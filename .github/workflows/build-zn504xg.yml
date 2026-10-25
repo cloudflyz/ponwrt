@@ -67,13 +67,17 @@ jobs:
         run: |
           ./scripts/kconfig.pl + \
             "configs/${{ inputs.target }}.config" \
-            configs/release.config > .config
+            configs/release.config \
+            configs/zn504-extra.config > .config
           make defconfig
 
-      - name: Verify ZN504XG-D is enabled
+      - name: Verify ZN504XG-D and extra packages
         run: |
           grep -q '^CONFIG_TARGET_airoha_an7581_DEVICE_znxt_zn504xg-d=y' .config \
             || { echo "device profile missing"; exit 1; }
+          for p in luci-app-ttyd luci-app-sqm luci-app-wol; do
+            grep -q "^CONFIG_PACKAGE_$p=y" .config || { echo "missing $p"; exit 1; }
+          done
 
       - name: Download sources
         run: make download -j"$(nproc)" V=s
