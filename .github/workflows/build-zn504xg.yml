@@ -65,10 +65,10 @@ jobs:
 
       - name: Configure ${{ inputs.target }}
         run: |
-          ./scripts/kconfig.pl + \
-            "configs/${{ inputs.target }}.config" \
-            configs/release.config \
-            configs/zn504-extra.config > .config
+          # kconfig.pl merges exactly two operands, so chain the merges.
+          ./scripts/kconfig.pl + "configs/${{ inputs.target }}.config" configs/release.config > .config.base
+          ./scripts/kconfig.pl + .config.base configs/zn504-extra.config > .config
+          rm -f .config.base
           make defconfig
 
       - name: Verify ZN504XG-D and extra packages
