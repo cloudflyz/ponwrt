@@ -73,11 +73,14 @@ jobs:
 
       - name: Verify ZN504XG-D and extra packages
         run: |
-          grep -q '^CONFIG_TARGET_airoha_an7581_DEVICE_znxt_zn504xg-d=y' .config \
-            || { echo "device profile missing"; exit 1; }
+          # Device image selection uses CONFIG_TARGET_DEVICE_* (multi-profile build),
+          # not the CONFIG_TARGET_..._DEVICE_* single-profile symbols.
+          grep -q '^CONFIG_TARGET_DEVICE_airoha_an7581_DEVICE_znxt_zn504xg-d=y' .config \
+            || { echo "zn504xg-d image not selected"; grep -n 'zn504' .config || true; exit 1; }
           for p in luci-app-ttyd luci-app-sqm luci-app-wol; do
             grep -q "^CONFIG_PACKAGE_$p=y" .config || { echo "missing $p"; exit 1; }
           done
+          echo "device + extra packages OK"
 
       - name: Download sources
         run: make download -j"$(nproc)" V=s
@@ -89,7 +92,9 @@ jobs:
         run: |
           mkdir -p out
           ls -l bin/targets/airoha/${{ inputs.target }}/
-          cp -v bin/targets/airoha/${{ inputs.target }}/*znxt_zn504xg-d* out/ || true
+          ls bin/targets/airoha/${{ inputs.target }}/ | grep -q 'znxt_zn504xg-d' \
+            || { echo "no zn504xg-d artifacts produced"; exit 1; }
+          cp -v bin/targets/airoha/${{ inputs.target }}/*znxt_zn504xg-d* out/
           cp -v bin/targets/airoha/${{ inputs.target }}/*.manifest bin/targets/airoha/${{ inputs.target }}/profiles.json bin/targets/airoha/${{ inputs.target }}/sha256sums out/ 2>/dev/null || true
           sha256sum out/* > out/SHA256SUMS.txt
           tar --zstd -cf out/ponwrt-${{ inputs.target }}-full.tar.zst \
