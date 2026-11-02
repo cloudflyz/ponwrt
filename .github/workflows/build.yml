@@ -162,6 +162,14 @@ jobs:
           restore-keys: |
             ponwrt-toolchain-airoha-${{ steps.p.outputs.target }}-
 
+      # build_dir 的 gcc 编译目录单独缓存；只恢复 staging 仍会重编工具链
+      - name: Cache toolchain build dir
+        id: tcb
+        uses: actions/cache@v4
+        with:
+          path: build_dir/toolchain-*
+          key: ${{ steps.tk.outputs.key }}-build
+
       - name: Report toolchain cache
         run: |
           if [ "${{ steps.tk-restore.outputs.cache-hit }}" = "true" ]; then
