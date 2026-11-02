@@ -258,7 +258,11 @@ jobs:
           cat out/buildinfo.txt
 
           (cd out && sha256sum * > SHA256SUMS.txt)
-          tar --zstd -cf "out/ponwrt-$TARGET-full.tar.zst" -C bin/targets/airoha "$TARGET"
+
+          # 整包备份单独放到 full/，不进 Release（约 370MB）
+          mkdir -p full
+          tar --zstd -cf "full/ponwrt-$TARGET-full.tar.zst" -C bin/targets/airoha "$TARGET"
+          (cd full && sha256sum * > SHA256SUMS-full.txt)
 
           {
             echo "### 产物"
@@ -275,6 +279,15 @@ jobs:
           name: ponwrt-${{ steps.p.outputs.target }}-zn504xg-d
           path: out/*
           retention-days: 30
+
+      # 整包另存，保留 3 天，不占 Release
+      - name: Upload full backup
+        if: steps.p.outputs.mode == 'firmware'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ponwrt-${{ steps.p.outputs.target }}-full
+          path: full/*
+          retention-days: 3
 
       # ---------------------------------------------------------------
       # 发布：tag push 或 dispatch+publish=true
