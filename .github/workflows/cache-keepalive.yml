@@ -1,7 +1,7 @@
 name: Keep Toolchain Cache Alive
 
 # actions/cache 的条目 7 天不访问即被回收。
-# 每 5 天做一次 lookup-only 命中，只 touch 不下载，几秒完成。
+# 每 5 天做一次 lookup-only 命中，只 touch 不下载。
 
 on:
   schedule:
@@ -17,17 +17,21 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Touch toolchain caches
+      - name: Touch toolchain cache
         uses: actions/cache/restore@v4
         with:
           path: /tmp/dummy
-          key: ponwrt-toolchain-airoha-an7581-
+          key: keepalive-touch-toolchain-ponwrt-an7581
+          restore-keys: |
+            ponwrt-toolchain-an7581-
           lookup-only: true
 
-      - name: Touch dl caches
+      - name: Touch download cache
         uses: actions/cache/restore@v4
         continue-on-error: true
         with:
           path: /tmp/dummy
-          key: ponwrt-dl-an7581-
+          key: keepalive-touch-dl-ponwrt-an7581
+          restore-keys: |
+            ponwrt-dl-an7581-
           lookup-only: true
