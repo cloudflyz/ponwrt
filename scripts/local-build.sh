@@ -1,5 +1,12 @@
 #!/bin/bash
-# ponwrt 本地增量编译脚本（ZN504XG-D / an7581）
+# ============================================================
+# 【已弃用】本地编译不再使用。构建统一走 GitHub Actions：
+#   .github/workflows/build.yml
+#   · 打 v* tag      → 构建 + 自动发布 Release
+#   · workflow_dispatch → 只出 artifact（可勾 publish 发布）
+# 本脚本保留仅为历史参考，逻辑可能与 CI 不一致。
+# ============================================================
+# ponwrt 本地增量编译脚本（deprecated）（ZN504XG-D / an7581）
 # 用法: ./scripts/local-build.sh [jobs]
 #   jobs 默认 $(nproc)；建议留 1~2 核给系统，如 10 核跑 ./scripts/local-build.sh 8
 # 首次运行会装依赖 + 拉源码 + 全量编译；之后重跑同一目录即为增量编译（只重编变化的包）
