@@ -213,7 +213,7 @@ jobs:
             fi
           done
 
-          for p in luci-app-ttyd luci-app-sqm luci-app-wol; do
+          for p in luci-app-ttyd luci-app-sqm luci-app-wol luci-theme-vantage luci-app-vantage; do
             grep -q "^CONFIG_PACKAGE_${p}=y" .config || { echo "::error::缺少附加包 ${p}"; fail=1; }
           done
 
